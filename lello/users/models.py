@@ -48,6 +48,11 @@ class Team(models.Model):
         max_length = 200,
         null = True,
     )
+    members = models.ManyToManyField(
+        User,
+        through = 'users.Member',
+        related_name = "members",
+    )
     created_at = models.DateTimeField(
         auto_now_add = True
     )
@@ -58,17 +63,13 @@ class Team(models.Model):
     def __str__(self):
         return self.name
 
-class UserTeam(models.Model):
+class Member(models.Model):
     team = models.ForeignKey(
         'users.Team',
-        null = False,
-        blank = False,
         on_delete = models.CASCADE
     )
     user = models.ForeignKey(
         User,
-        null = False,
-        blank = False,
         on_delete = models.CASCADE
     )
     joined_at = models.DateTimeField(

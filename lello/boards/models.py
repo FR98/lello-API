@@ -17,11 +17,13 @@ class Board(models.Model):
         User,
         null = False,
         blank = False,
-        on_delete = models.CASCADE
+        on_delete = models.CASCADE,
+        related_name = "owner"
     )
     is_private = models.BooleanField(
         default = False
     )
+    members = models.ManyToManyField( User )
     created_at = models.DateTimeField(
         auto_now_add = True
     )
@@ -31,38 +33,6 @@ class Board(models.Model):
 
     def __str__(self):
         return self.name
-
-class Member(models.Model):
-    board = models.ForeignKey(
-        'boards.Board',
-        null = False,
-        blank = False,
-        on_delete = models.CASCADE
-    )
-    user = models.ForeignKey(
-        User,
-        null = False,
-        blank = False,
-        on_delete = models.CASCADE
-    )
-    joined_at = models.DateTimeField(
-        auto_now_add = True
-    )
-    # role = models.ForeignKey(
-    #     'boards.Role',
-    #     null = True,
-    #     on_delete = models.SET_NULL
-    # )
-
-# class Role(models.Model):
-#     name = models.CharField(
-#         max_length = 50,
-#         null = False,
-#         blank = False
-#     )
-
-#     def __str__(self):
-#         return self.name
 
 class List(models.Model):
     name = models.CharField(
@@ -120,6 +90,7 @@ class Card(models.Model):
         null = True,
         on_delete = models.SET_NULL
     )
+    assigned_to = models.ManyToManyField( User )
     created_at = models.DateTimeField(
         auto_now_add = True
     )
@@ -154,23 +125,3 @@ class Label(models.Model):
 
     def __str__(self):
         return self.name
-
-class Assigned(models.Model):
-    card = models.ForeignKey(
-        'boards.Card',
-        null = False,
-        blank = False,
-        on_delete = models.CASCADE
-    )
-    user = models.ForeignKey(
-        User,
-        null = False,
-        blank = False,
-        on_delete = models.CASCADE
-    )
-    joined_at = models.DateTimeField(
-        auto_now_add = True
-    )
-
-    def __str__(self):
-        return self.card + " " + self.user
