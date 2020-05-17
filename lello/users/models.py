@@ -1,44 +1,58 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils.translation import gettext_lazy as _
 
 
 class UserDetail(models.Model):
 
     class Gender(models.TextChoices):
         male 	= 'M', _('Male')
-        female 	= 'F', _('Female') 
-        
+        female 	= 'F', _('Female')
+    
     user = models.ForeignKey(
         User,
         null = False,
         blank = False,
         on_delete = models.CASCADE
     )
-    # TODO: enum
     gender = models.CharField(
-        choices = Gender.choices
+        choices = Gender.choices,
         max_length = 10,
         editable = False,
-        null=True,
-        blank=True
+        null = False,
     )
     phone = models.CharField(
         max_length = 8,
         null = True,
-        blank = True
     )
     birthdate = models.DateField(
-        null = False
+        null = True
+    )
+    created_at = models.DateTimeField(
+        auto_now_add = True
+    )
+    updated_at = models.DateTimeField(
+        auto_now = True
     )
 
     def __str__(self):
-        return self.user
+        return User.objects.get( pk = self.user ).first_name
 
 class Team(models.Model):
     name = models.CharField(
         max_length = 50,
         null = False,
         blank = False
+    )
+    description = models.CharField(
+        max_length = 200,
+        null = True,
+    )
+    created_at = models.DateTimeField(
+        auto_now_add = True
+    )
+    updated_at = models.DateTimeField(
+        auto_now = True
     )
 
     def __str__(self):
@@ -57,21 +71,21 @@ class UserTeam(models.Model):
         blank = False,
         on_delete = models.CASCADE
     )
-    role = models.ForeignKey(
-        'users.Role',
-        null = True,  
-        on_delete = models.SET_NULL
+    joined_at = models.DateTimeField(
+        auto_now_add = True
     )
+    # role = models.ForeignKey(
+    #     'users.Role',
+    #     null = True,  
+    #     on_delete = models.SET_NULL
+    # )
 
-    def __str__(self):
-        return self.team
+# class Role(models.Model):
+#     name = models.CharField(
+#         max_length = 20,
+#         null = False,
+#         blank = False
+#     )
 
-class Role(models.Model):
-    name = models.CharField(
-        max_length = 20,
-        null = False,
-        blank = False
-    )
-
-    def __str__(self):
-        return self.name
+#     def __str__(self):
+#         return self.name

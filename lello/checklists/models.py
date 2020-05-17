@@ -6,8 +6,13 @@ from django.contrib.auth.models import User
 class Checklist(models.Model):
     name = models.CharField(
         max_length = 50,
-        blank = True,
-        null = True
+        default = "To do"
+    )
+    created_at = models.DateTimeField(
+        auto_now_add = True
+    )
+    updated_at = models.DateTimeField(
+        auto_now = True
     )
 
     def __str__(self):
@@ -15,7 +20,7 @@ class Checklist(models.Model):
 
 class Element(models.Model):
     title = models.CharField(
-        max_length = 50,
+        max_length = 100,
         null = False,
         blank = False
     )
@@ -25,18 +30,22 @@ class Element(models.Model):
         blank = False,
         on_delete = models.CASCADE
     )
-    position = models.IntegerField()
     is_done = models.BooleanField(
         default = False
     )
     assigned_to = models.ForeignKey(
         User,
         null = True,
-        blank = True,
         on_delete = models.SET_NULL
     )
     deadline = models.DateTimeField(
         null = True
+    )
+    created_at = models.DateTimeField(
+        auto_now_add = True
+    )
+    updated_at = models.DateTimeField(
+        auto_now = True
     )
 
     def __str__(self):

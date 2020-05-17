@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils.translation import gettext_lazy as _
 
 
 class Board(models.Model):
@@ -11,7 +12,6 @@ class Board(models.Model):
     descriptiom = models.CharField(
         max_length = 200,
         null = True,
-        blank = True
     )
     owner = models.ForeignKey(
         User,
@@ -21,6 +21,12 @@ class Board(models.Model):
     )
     is_private = models.BooleanField(
         default = False
+    )
+    created_at = models.DateTimeField(
+        auto_now_add = True
+    )
+    updated_at = models.DateTimeField(
+        auto_now = True
     )
 
     def __str__(self):
@@ -39,25 +45,24 @@ class Member(models.Model):
         blank = False,
         on_delete = models.CASCADE
     )
-    role = models.ForeignKey(
-        'boards.Role',
-        null = True,
-        blank = True,
-        on_delete = models.SET_NULL
+    joined_at = models.DateTimeField(
+        auto_now_add = True
     )
+    # role = models.ForeignKey(
+    #     'boards.Role',
+    #     null = True,
+    #     on_delete = models.SET_NULL
+    # )
 
-    def __str__(self):
-        return self.user
+# class Role(models.Model):
+#     name = models.CharField(
+#         max_length = 50,
+#         null = False,
+#         blank = False
+#     )
 
-class Role(models.Model):
-    name = models.CharField(
-        max_length = 50,
-        null = False,
-        blank = False
-    )
-
-    def __str__(self):
-        return self.name
+#     def __str__(self):
+#         return self.name
 
 class List(models.Model):
     name = models.CharField(
@@ -66,64 +71,90 @@ class List(models.Model):
         blank = False
     )
     hours_estimated = models.DecimalField(
-        decimal_places = 2
+        decimal_places = 2,
+        max_digits = 4,
     )
     hours_done = models.DecimalField(
-        decimal_places = 2
+        decimal_places = 2,
+        max_digits = 4,
     )
-
-class Card(models.Model):
-    name = models.CharField(
-        max_length = 50,
-        null = False,
-        blank = False
+    created_at = models.DateTimeField(
+        auto_now_add = True
     )
-    number = models.IntegerField()
-    description = models.CharField(
-        max_length = 200,
-        null = True,
-        blank = True
-    )
-    hours_estimated = models.DecimalField(
-        decimal_places = 2
-    )
-    hours_done = models.DecimalField(
-        decimal_places = 2
-    )
-    checklist = models.ForeignKey(
-        'checklists.Checklist',
-        null = False,
-        blank = False,
-        on_delete = models.CASCADE
-    )
-    deadline = models.DateTimeField(
-        null = True,
-        blank = True
-    )
-    label = models.ForeignKey(
-        'boards.Label',
-        null = True,
-        blank = True,
-        on_delete = models.SET_NULL
-    )
-
-    def __str__(self):
-        return self.number + self.name
-    
-class Label(models.Model):
-    name = models.CharField(
-        max_length = 20,
-        null = False,
-        blank = False
-    )
-    color = models.CharField(
-        max_length = 10
+    updated_at = models.DateTimeField(
+        auto_now = True
     )
 
     def __str__(self):
         return self.name
 
-# m2m
+class Card(models.Model):
+    title = models.CharField(
+        max_length = 75,
+        null = False,
+        blank = False
+    )
+    number = models.IntegerField()
+    description = models.CharField(
+        max_length = 300,
+        null = True,
+    )
+    hours_estimated = models.DecimalField(
+        decimal_places = 2,
+        max_digits = 4,
+    )
+    hours_done = models.DecimalField(
+        decimal_places = 2,
+        max_digits = 4,
+    )
+    checklist = models.ForeignKey(
+        'checklists.Checklist',
+        null = True,
+        on_delete = models.SET_NULL
+    )
+    deadline = models.DateTimeField(
+        null = True,
+    )
+    label = models.ForeignKey(
+        'boards.Label',
+        null = True,
+        on_delete = models.SET_NULL
+    )
+    created_at = models.DateTimeField(
+        auto_now_add = True
+    )
+    updated_at = models.DateTimeField(
+        auto_now = True
+    )
+
+    def __str__(self):
+        return self.number + " " + self.title
+    
+class Label(models.Model):
+
+    class Priority(models.TextChoices):
+        high 	= 'H', _('High')
+        medium 	= 'M', _('Medium')
+        low     = 'L', _('Low')
+    
+    name = models.CharField(
+        max_length = 20,
+        null = False,
+    )
+    color = models.CharField(
+        max_length = 10,
+        default = '#ffffff'
+    )
+    priority = models.CharField(
+        choices = Priority.choices,
+        max_length = 20,
+        editable = True,
+        default = 'L',
+    )
+
+    def __str__(self):
+        return self.name
+
 class Assigned(models.Model):
     card = models.ForeignKey(
         'boards.Card',
@@ -137,6 +168,9 @@ class Assigned(models.Model):
         blank = False,
         on_delete = models.CASCADE
     )
+    joined_at = models.DateTimeField(
+        auto_now_add = True
+    )
 
     def __str__(self):
-        return self.card + self.user
+        return self.card + " " + self.user
