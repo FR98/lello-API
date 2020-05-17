@@ -40,19 +40,22 @@ class User(models.Model):
             # TODO: Revisar foreign key
             'users.Team',
             null = False,
-            blank = False
+            blank = False,
+            on_delete = models.CASCADE
         )
         user = models.ForeignKey(
             # TODO: Revisar foreign key
             'users.User',
             null = False,
-            blank = False
+            blank = False,
+            on_delete = models.CASCADE
         )
         role = models.ForeignKey(
             # TODO: Revisar foreign key
             'users.Role',
             null = False,
-            blank = False
+            blank = False,
+            on_delete = models.CASCADE
         )
 
         def __str__(self):
