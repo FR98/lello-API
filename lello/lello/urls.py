@@ -14,8 +14,43 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.conf.urls import url, include
+
+from rest_framework import routers
+from rest_framework_jwt.views import (
+    obtain_jwt_token,
+    refresh_jwt_token,
+    verify_jwt_token,
+)
+
+from users.views import UserViewSet, UserDetailViewSet, TeamViewSet
+from boards.views import BoardViewSet, ListViewSet, CardViewSet, LabelViewSet
+from checklists.views import ChecklistViewSet, ElementViewSet
+from calendars.views import CalendarViewSet, EventViewSet
+from notifications.views import NotificationViewSet
+from audits.views import AuditViewSet
+
+
+router = routers.DefaultRouter()
+router.register(r'users', UserViewSet)
+router.register(r'userdetails', UserDetailViewSet)
+router.register(r'teams', TeamViewSet)
+router.register(r'boards', BoardViewSet)
+router.register(r'lists', ListViewSet)
+router.register(r'cards', CardViewSet)
+router.register(r'labels', LabelViewSet)
+router.register(r'checklists', ChecklistViewSet)
+router.register(r'elements', ElementViewSet)
+router.register(r'calendars', CalendarViewSet)
+router.register(r'events', EventViewSet)
+router.register(r'notifications', NotificationViewSet)
+router.register(r'audits', AuditViewSet)
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    url('admin/', admin.site.urls),
+    url(r'^api-auth/', include('rest_framework.urls', namespace = 'rest_framework')),
+    url(r'^api/', include(router.urls)),
+    url(r'^api-token/auth/', obtain_jwt_token),
+    url(r'^api-token/refresh/', refresh_jwt_token),
+    url(r'^api-token/verify/', verify_jwt_token),
 ]

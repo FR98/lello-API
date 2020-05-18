@@ -1,17 +1,17 @@
 from django.shortcuts import render
 from rest_framework import viewsets
 
-from audits.models import Audit
-from audits.serializers import AuditSerializer
+from notifications.models import Notification
+from notifications.serializers import NotificationSerializer
 from users.permissions import APIPermissionClassFactory
 
 
-class AuditViewSet(viewsets.ModelViewSet):
-    queryset = Audit.objects.all()
-    serializer_class = AuditSerializer
+class NotificationViewSet(viewsets.ModelViewSet):
+    queryset = Notification.objects.all()
+    serializer_class = NotificationSerializer
     permission_classes = (
         APIPermissionClassFactory(
-            name='AuditPermission',
+            name='NotificationPermission',
             permission_configuration={
                 'base': {
                     'create': True,

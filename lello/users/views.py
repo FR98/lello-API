@@ -1,3 +1,71 @@
 from django.shortcuts import render
+from rest_framework import viewsets
 
-# Create your views here.
+from django.contrib.auth.models import User
+from users.models import UserDetail, Team
+from users.serializers import UserSerializer, UserDetailSerializer, TeamSerializer
+from users.permissions import APIPermissionClassFactory
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = (
+        APIPermissionClassFactory(
+            name='UserPermission',
+            permission_configuration={
+                'base': {
+                    'create': True,
+                    'list': True,
+                },
+                'instance': {
+                    'retrieve': True,
+                    'update': True,
+                    'partial_update': True,
+                    'destroy': True,
+                }
+            }
+        ),
+    )
+
+class UserDetailViewSet(viewsets.ModelViewSet):
+    queryset = UserDetail.objects.all()
+    serializer_class = UserDetailSerializer
+    permission_classes = (
+        APIPermissionClassFactory(
+            name='UserDetailPermission',
+            permission_configuration={
+                'base': {
+                    'create': True,
+                    'list': True,
+                },
+                'instance': {
+                    'retrieve': True,
+                    'update': True,
+                    'partial_update': True,
+                    'destroy': True,
+                }
+            }
+        ),
+    )
+
+class TeamViewSet(viewsets.ModelViewSet):
+    queryset = Team.objects.all()
+    serializer_class = TeamSerializer
+    permission_classes = (
+        APIPermissionClassFactory(
+            name='TeamPermission',
+            permission_configuration={
+                'base': {
+                    'create': True,
+                    'list': True,
+                },
+                'instance': {
+                    'retrieve': True,
+                    'update': True,
+                    'partial_update': True,
+                    'destroy': True,
+                }
+            }
+        ),
+    )

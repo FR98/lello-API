@@ -1,32 +1,23 @@
 from django.db import models
 from django.contrib.auth.models import User
-
+from django.utils.translation import gettext_lazy as _
 
 class Audit(models.Model):
-    date = models.DateField(
-        null = True
-    )
-    time = models.TimeField(
-        null = True
-    )
-    action = models.ForeignKey(
-        'actions.Action',
-        null = False,
-        blank = False,
-        on_delete = models.CASCADE
-    )
-    entity = models.CharField(
-        max_length = 50,
-        null = True,
-        blank = True,
-    )
+
+    class HttpType(models.TextChoices):
+        GET 	= 'GET',    _('GET')
+        POST 	= 'POST',   _('POST')
+        PUT     = 'PUT',    _('PUT')
+        DELETE  = 'DELETE', _('DELETE')
+    
     httpType = models.CharField(
-        max_length = 100,
-        null = True,
-        blank = True
+        choices = HttpType.choices,
+        max_length = 20,
+        editable = False,
+        default = 'GET',
     )
-    url = models.URLField(
-        null = True
+    url = models.CharField(
+        max_length = 300,
     )
     user = models.ForeignKey(
         User,
@@ -34,6 +25,6 @@ class Audit(models.Model):
         blank = False,
         on_delete = models.CASCADE
     )
-
-    def __str__(self):
-        return self.action
+    created_at = models.DateTimeField(
+        auto_now_add = True
+    )
