@@ -6,13 +6,14 @@ from boards.models import Board, List, Card
 
 def create_initial_data(request):
 
-    admin = User.objects.create(
+    admin = User(
         username = "admin",
         email = "admin@admin.com",
         is_superuser = True,
         is_staff = True
     )
     admin.set_password("admin")
+    admin.save()
 
     adminDetail = UserDetail.objects.create(
         user = admin,
