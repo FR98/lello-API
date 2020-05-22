@@ -30,6 +30,8 @@ from calendars.views import CalendarViewSet, EventViewSet
 from notifications.views import NotificationViewSet
 from audits.views import AuditViewSet
 
+from init_data import create_initial_data
+
 
 router = routers.DefaultRouter()
 router.register(r'users', UserViewSet)
@@ -53,4 +55,5 @@ urlpatterns = [
     url(r'^api/token-auth/', obtain_jwt_token),
     url(r'^api/token-refresh/', refresh_jwt_token),
     url(r'^api/token-verify/', verify_jwt_token),
+    url(r'^admin/initial-data/', create_initial_data),
 ]

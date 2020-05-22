@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
 
+from users.models import Team
+
 
 class Board(models.Model):
     name =  models.CharField(
@@ -23,7 +25,11 @@ class Board(models.Model):
     is_private = models.BooleanField(
         default = False
     )
-    members = models.ManyToManyField( User )
+    team = models.ForeignKey(
+        Team,
+        null = False,
+        on_delete = models.CASCADE
+    )
     created_at = models.DateTimeField(
         auto_now_add = True
     )
