@@ -46,6 +46,11 @@ class List(models.Model):
         null = False,
         blank = False
     )
+    board = models.ForeignKey(
+        Board,
+        null = False,
+        on_delete = models.CASCADE,
+    )
     hours_estimated = models.DecimalField(
         decimal_places = 2,
         max_digits = 4,
@@ -69,6 +74,11 @@ class Card(models.Model):
         max_length = 75,
         null = False,
         blank = False
+    )
+    lista = models.ForeignKey(
+        List,
+        null = False,
+        on_delete = models.CASCADE,
     )
     number = models.IntegerField()
     description = models.CharField(
