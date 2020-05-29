@@ -6,15 +6,19 @@ from checklists.serializers import ChecklistSerializer
 
 
 class BoardSerializer(serializers.ModelSerializer):
-    team = TeamSerializer()
-    owner = UserSerializer()
+    # team = TeamSerializer()
+    # owner = UserSerializer()
 
     class Meta:
         model = Board
         fields = '__all__'
 
     # def create(self, validated_data):
-    #     team_data = validated_data.pop('team')
+    #     print(validated_data)
+    #     owner_data = validated_data.pop('owner')
+    #     print('------------------')
+    #     print(owner_data)
+    #     print('------------------')
     #     board = Board.objects.create(**validated_data)
     #     return board
 

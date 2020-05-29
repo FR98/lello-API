@@ -1,5 +1,5 @@
-from django.shortcuts import render, status
-from rest_framework import viewsets
+from django.shortcuts import render
+from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.http import Http404
@@ -33,12 +33,21 @@ class BoardViewSet(viewsets.ModelViewSet):
     )
 
     def create(self, request):
+        # print(request.data)
         Audit.objects.create(
             httpMethod = request.method,
             url = '/boards/',
             user = request.user
         )
         return super().create(request)
+
+    # def perform_create(self, serializer):
+    #     user = self.request.user
+    #     team = serializer.validated_data['team']
+    #     print(serializer)
+    #     board = serializer.save()
+
+    #     return Response(serializer.data)
 
     def destroy(self, request, *args, **kwargs):
         try:
@@ -61,20 +70,6 @@ class BoardViewSet(viewsets.ModelViewSet):
         return Response(
             [ListSerializer(lista).data for lista in lists]
         )
-
-    # def perform_create(self, serializer):
-    #     print("HOLA")
-    #     return Response(serializer.data)
-
-    # def perform_create(self, serializer):
-    #     parent = self.request.user
-    #     baby = serializer.validated_data['baby']
-    #     if baby.parent.id == parent.id:
-    #         event = serializer.save()
-    #         return Response(serializer.data)
-            
-    #     # Retornar error
-    #     return Response(serializer.data)
 
 class ListViewSet(viewsets.ModelViewSet):
     queryset = List.objects.all()
