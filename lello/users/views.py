@@ -77,9 +77,6 @@ class TeamViewSet(viewsets.ModelViewSet):
     )
 
     def create(self, request):
-        # print(request.data)
-        # print(request.query_params)
-        # print(request.stream)
         Audit.objects.create(
             httpMethod = request.method,
             url = '/teams/',

@@ -1,11 +1,13 @@
 from django.shortcuts import render
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from django.http import Http404
 
 from calendars.models import Calendar, Event
 from calendars.serializers import CalendarSerializer, EventSerializer
 from users.permissions import APIPermissionClassFactory
+from audits.models import Audit
 
 
 class CalendarViewSet(viewsets.ModelViewSet):
@@ -29,6 +31,27 @@ class CalendarViewSet(viewsets.ModelViewSet):
             }
         ),
     )
+
+    def create(self, request):
+        Audit.objects.create(
+            httpMethod = request.method,
+            url = '/calendars/',
+            user = request.user
+        )
+        return super().create(request)
+
+    def destroy(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            self.perform_destroy(instance)
+            Audit.objects.create(
+                httpMethod = request.method,
+                url = '/calendars/{}'.format(kwargs['pk']),
+                user = request.user
+            )
+        except Http404:
+            pass
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(detail=True, methods=['get'])
     def events(self, request, pk=None):
@@ -59,3 +82,24 @@ class EventViewSet(viewsets.ModelViewSet):
             }
         ),
     )
+
+    def create(self, request):
+        Audit.objects.create(
+            httpMethod = request.method,
+            url = '/events/',
+            user = request.user
+        )
+        return super().create(request)
+
+    def destroy(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            self.perform_destroy(instance)
+            Audit.objects.create(
+                httpMethod = request.method,
+                url = '/events/{}'.format(kwargs['pk']),
+                user = request.user
+            )
+        except Http404:
+            pass
+        return Response(status=status.HTTP_204_NO_CONTENT)
