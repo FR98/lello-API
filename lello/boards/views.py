@@ -1,11 +1,13 @@
-from django.shortcuts import render
+from django.shortcuts import render, status
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from django.http import Http404
 
 from boards.models import Board, List, Card, Label
 from boards.serializers import BoardSerializer, ListSerializer, CardSerializer, LabelSerializer
 from users.permissions import APIPermissionClassFactory
+from audits.models import Audit
 
 
 class BoardViewSet(viewsets.ModelViewSet):
@@ -29,6 +31,27 @@ class BoardViewSet(viewsets.ModelViewSet):
             }
         ),
     )
+
+    def create(self, request):
+        Audit.objects.create(
+            httpMethod = request.method,
+            url = '/boards/',
+            user = request.user
+        )
+        return super().create(request)
+
+    def destroy(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            self.perform_destroy(instance)
+            Audit.objects.create(
+                httpMethod = request.method,
+                url = '/boards/{}'.format(kwargs['pk']),
+                user = request.user
+            )
+        except Http404:
+            pass
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(detail=True, methods=['get'])
     def lists(self, request, pk=None):
@@ -75,6 +98,27 @@ class ListViewSet(viewsets.ModelViewSet):
         ),
     )
 
+    def create(self, request):
+        Audit.objects.create(
+            httpMethod = request.method,
+            url = '/lists/',
+            user = request.user
+        )
+        return super().create(request)
+
+    def destroy(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            self.perform_destroy(instance)
+            Audit.objects.create(
+                httpMethod = request.method,
+                url = '/lists/{}'.format(kwargs['pk']),
+                user = request.user
+            )
+        except Http404:
+            pass
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
     @action(detail=True, methods=['get'])
     def cards(self, request, pk=None):
         lista = self.get_object()
@@ -105,6 +149,27 @@ class CardViewSet(viewsets.ModelViewSet):
         ),
     )
 
+    def create(self, request):
+        Audit.objects.create(
+            httpMethod = request.method,
+            url = '/cards/',
+            user = request.user
+        )
+        return super().create(request)
+
+    def destroy(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            self.perform_destroy(instance)
+            Audit.objects.create(
+                httpMethod = request.method,
+                url = '/cards/{}'.format(kwargs['pk']),
+                user = request.user
+            )
+        except Http404:
+            pass
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 class LabelViewSet(viewsets.ModelViewSet):
     queryset = Label.objects.all()
     serializer_class = LabelSerializer
@@ -125,3 +190,24 @@ class LabelViewSet(viewsets.ModelViewSet):
             }
         ),
     )
+
+    def create(self, request):
+        Audit.objects.create(
+            httpMethod = request.method,
+            url = '/labels/',
+            user = request.user
+        )
+        return super().create(request)
+
+    def destroy(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            self.perform_destroy(instance)
+            Audit.objects.create(
+                httpMethod = request.method,
+                url = '/labels/{}'.format(kwargs['pk']),
+                user = request.user
+            )
+        except Http404:
+            pass
+        return Response(status=status.HTTP_204_NO_CONTENT)

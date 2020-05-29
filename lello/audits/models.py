@@ -4,14 +4,14 @@ from django.utils.translation import gettext_lazy as _
 
 class Audit(models.Model):
 
-    class HttpType(models.TextChoices):
+    class HttpMethod(models.TextChoices):
         GET 	= 'GET',    _('GET')
         POST 	= 'POST',   _('POST')
         PUT     = 'PUT',    _('PUT')
         DELETE  = 'DELETE', _('DELETE')
     
-    httpType = models.CharField(
-        choices = HttpType.choices,
+    httpMethod = models.CharField(
+        choices = HttpMethod.choices,
         max_length = 20,
         editable = False,
         default = 'GET',

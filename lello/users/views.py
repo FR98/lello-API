@@ -1,13 +1,15 @@
 from django.shortcuts import render
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from django.http import Http404
 
 from django.contrib.auth.models import User
 from users.models import UserDetail, Team
 from users.serializers import UserSerializer, UserDetailSerializer, TeamSerializer
 from users.permissions import APIPermissionClassFactory
 from boards.serializers import BoardSerializer
+from audits.models import Audit
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -73,6 +75,27 @@ class TeamViewSet(viewsets.ModelViewSet):
             }
         ),
     )
+
+    def create(self, request):
+        Audit.objects.create(
+            httpMethod = request.method,
+            url = '/teams/',
+            user = request.user
+        )
+        return super().create(request)
+
+    def destroy(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            self.perform_destroy(instance)
+            Audit.objects.create(
+                httpMethod = request.method,
+                url = '/teams/{}'.format(kwargs['pk']),
+                user = request.user
+            )
+        except Http404:
+            pass
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(detail=True, methods=['get'])
     def boards(self, request, pk=None):
