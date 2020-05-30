@@ -22,21 +22,22 @@ class BoardSerializer(serializers.ModelSerializer):
     #     board = Board.objects.create(**validated_data)
     #     return board
 
-class ListSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = List
-        fields = '__all__'
-
 class LabelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Label
         fields = '__all__'
 
 class CardSerializer(serializers.ModelSerializer):
-    checklist = ChecklistSerializer()
-    label = LabelSerializer()
-    assigned_to = UserSerializer(many=True)
+    # checklist = ChecklistSerializer(read_only=True)
+    # label = LabelSerializer(read_only=True)
+    # assigned_to = UserSerializer(many=True, read_only=True)
 
     class Meta:
         model = Card
+        fields = '__all__'
+
+class ListSerializer(serializers.ModelSerializer):
+    card_set = CardSerializer(many=True)
+    class Meta:
+        model = List
         fields = '__all__'
