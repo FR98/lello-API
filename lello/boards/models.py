@@ -80,7 +80,7 @@ class Card(models.Model):
         null = False,
         on_delete = models.CASCADE,
     )
-    number = models.IntegerField()
+    number = models.IntegerField(null=True)
     description = models.CharField(
         max_length = 300,
         null = True,
@@ -88,10 +88,12 @@ class Card(models.Model):
     hours_estimated = models.DecimalField(
         decimal_places = 2,
         max_digits = 4,
+        default = 0,
     )
     hours_done = models.DecimalField(
         decimal_places = 2,
         max_digits = 4,
+        default = 0,
     )
     checklist = models.ForeignKey(
         'checklists.Checklist',
@@ -106,7 +108,7 @@ class Card(models.Model):
         null = True,
         on_delete = models.SET_NULL
     )
-    assigned_to = models.ManyToManyField( User )
+    assigned_to = models.ManyToManyField( User, blank = True )
     created_at = models.DateTimeField(
         auto_now_add = True
     )
