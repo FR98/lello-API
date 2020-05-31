@@ -71,6 +71,7 @@ class TeamViewSet(viewsets.ModelViewSet):
                     'partial_update': True,
                     'destroy': True,
                     'boards': True,
+                    'members': True,
                 }
             }
         ),
@@ -104,4 +105,13 @@ class TeamViewSet(viewsets.ModelViewSet):
 
         return Response(
             [BoardSerializer(board).data for board in boards]
+        )
+
+    @action(detail=True, methods=['get'])
+    def members(self, request, pk=None):
+        team = self.get_object()
+        members = team.members.all()
+
+        return Response(
+            [UserSerializer(user).data for user in members]
         )
