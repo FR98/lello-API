@@ -37,7 +37,7 @@ class CardSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class ListSerializer(serializers.ModelSerializer):
-    card_set = CardSerializer(many=True)
+    card_set = CardSerializer(many=True, read_only=True)
     class Meta:
         model = List
         fields = '__all__'
