@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from rest_framework import viewsets, status
 from django.http import Http404
+from rest_framework.response import Response
 
 from notifications.models import Notification
 from notifications.serializers import NotificationSerializer
