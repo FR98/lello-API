@@ -7,7 +7,7 @@ from checklists.serializers import ChecklistSerializer
 
 class BoardSerializer(serializers.ModelSerializer):
     # team = TeamSerializer()
-    # owner = UserSerializer()
+    # owner = UserSerializer(read_only = True)
 
     class Meta:
         model = Board

@@ -1,8 +1,10 @@
+import datetime
 from django.shortcuts import render
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.http import Http404
+from django.core.mail import send_mail
 
 from boards.models import Board, List, Card, Label
 from boards.serializers import BoardSerializer, ListSerializer, CardSerializer, LabelSerializer
@@ -10,6 +12,7 @@ from users.permissions import APIPermissionClassFactory
 from audits.models import Audit
 from audits.serializers import AuditSerializer
 from notifications.models import Notification
+from calendars.models import Event
 
 
 class BoardViewSet(viewsets.ModelViewSet):
@@ -178,6 +181,12 @@ class CardViewSet(viewsets.ModelViewSet):
     )
 
     def create(self, request):
+        lista = List.objects.get(pk = request.data["lista"])
+        # tablero = Board.objects.select_related('board').get(lista.id)
+        tablero = lista.board
+        # tablero = lista.board_set.all()[0]
+        calendario = tablero.calendar_set.all()[0]
+        print(calendario)
         Audit.objects.create(
             httpMethod = request.method,
             url = '/cards/',
@@ -191,6 +200,13 @@ class CardViewSet(viewsets.ModelViewSet):
             transmitter = request.user,
             receiver = board.owner
         )
+        Event.objects.create(
+            calendar = calendario,
+            title = 'Nueva tarjeta: {}'.format(request.data["title"]),
+            description = 'Tarjeta creada por: {}, {}, {}, {}'.format(request.user.username, lista.id, tablero.id, calendario.id),
+            date = datetime.datetime.now()
+        )
+        
         return super().create(request)
 
     def destroy(self, request, *args, **kwargs):
