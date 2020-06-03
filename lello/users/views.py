@@ -4,11 +4,13 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.http import Http404
 
-from django.contrib.auth.models import User
-from users.models import UserDetail, Team
 from users.serializers import UserSerializer, UserDetailSerializer, TeamSerializer
+from notifications.serializers import NotificationSerializer
 from users.permissions import APIPermissionClassFactory
 from boards.serializers import BoardSerializer
+from notifications.models import Notification
+from django.contrib.auth.models import User
+from users.models import UserDetail, Team
 from audits.models import Audit
 
 
@@ -28,10 +30,20 @@ class UserViewSet(viewsets.ModelViewSet):
                     'update': True,
                     'partial_update': True,
                     'destroy': True,
+                    'notifications': True,
                 }
             }
         ),
     )
+
+    @action(detail=True, methods=['get'])
+    def notifications(self, request, pk=None):
+        user = self.get_object()
+        notifications = Notification.objects.filter(receiver = user)
+
+        return Response(
+            [NotificationSerializer(notification).data for notification in notifications]
+        )
 
 class UserDetailViewSet(viewsets.ModelViewSet):
     queryset = UserDetail.objects.all()
@@ -91,7 +103,7 @@ class TeamViewSet(viewsets.ModelViewSet):
             self.perform_destroy(instance)
             Audit.objects.create(
                 httpMethod = request.method,
-                url = '/teams/{}'.format(kwargs['pk']),
+                url = '/teams/{}/'.format(kwargs['pk']),
                 user = request.user
             )
         except Http404:

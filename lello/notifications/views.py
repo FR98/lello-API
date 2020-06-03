@@ -43,7 +43,7 @@ class NotificationViewSet(viewsets.ModelViewSet):
             self.perform_destroy(instance)
             Audit.objects.create(
                 httpMethod = request.method,
-                url = '/notifications/{}'.format(kwargs['pk']),
+                url = '/notifications/{}/'.format(kwargs['pk']),
                 user = request.user
             )
         except Http404:
