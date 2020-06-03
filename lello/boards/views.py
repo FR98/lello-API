@@ -10,12 +10,9 @@ from boards.models import Board, List, Card, Label
 from boards.serializers import BoardSerializer, ListSerializer, CardSerializer, LabelSerializer
 from users.permissions import APIPermissionClassFactory
 from audits.models import Audit
-<<<<<<< HEAD
 from audits.serializers import AuditSerializer
 from notifications.models import Notification
-=======
 from calendars.models import Event
->>>>>>> 2be8d885fa8dad2b6c34b173f11f367c49d36c29
 
 
 class BoardViewSet(viewsets.ModelViewSet):
@@ -195,7 +192,6 @@ class CardViewSet(viewsets.ModelViewSet):
             url = '/cards/',
             user = request.user
         )
-<<<<<<< HEAD
         lista = List.objects.get(pk = request.data['lista'])
         board = Board.objects.get(pk = lista.board.id)
         Notification.objects.create(
@@ -204,15 +200,12 @@ class CardViewSet(viewsets.ModelViewSet):
             transmitter = request.user,
             receiver = board.owner
         )
-=======
         Event.objects.create(
             calendar = calendario,
             title = 'Nueva tarjeta: {}'.format(request.data["title"]),
             description = 'Tarjeta creada por: {}, {}, {}, {}'.format(request.user.username, lista.id, tablero.id, calendario.id),
             date = datetime.datetime.now()
         )
-        
->>>>>>> 2be8d885fa8dad2b6c34b173f11f367c49d36c29
         return super().create(request)
 
     def destroy(self, request, *args, **kwargs):
