@@ -206,7 +206,10 @@ class CardViewSet(viewsets.ModelViewSet):
             description = 'Tarjeta creada por: {}, {}, {}, {}'.format(request.user.username, lista.id, tablero.id, calendario.id),
             date = datetime.datetime.now()
         )
+<<<<<<< HEAD
         
+=======
+>>>>>>> 1b8d8fc686be234cc6e3bb7e7187aefd4ff42de5
         return super().create(request)
 
     def destroy(self, request, *args, **kwargs):
