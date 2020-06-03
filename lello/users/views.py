@@ -131,7 +131,6 @@ class TeamViewSet(viewsets.ModelViewSet):
             [BoardSerializer(board).data for board in boards]
         )
 
-<<<<<<< HEAD
     @action(detail=True, methods=['get'])
     def members(self, request, pk=None):
         team = self.get_object()
@@ -140,5 +139,3 @@ class TeamViewSet(viewsets.ModelViewSet):
         return Response(
             [UserSerializer(user).data for user in members]
         )
-=======
->>>>>>> 2be8d885fa8dad2b6c34b173f11f367c49d36c29

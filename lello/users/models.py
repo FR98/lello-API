@@ -18,7 +18,7 @@ class UserDetail(models.Model):
     user = models.OneToOneField(
         User, 
         on_delete= models.CASCADE
-        )
+    )
     gender = models.CharField(
         choices = Gender.choices,
         max_length = 10,
