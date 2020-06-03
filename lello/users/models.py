@@ -9,12 +9,16 @@ class UserDetail(models.Model):
         male 	= 'M', _('Male')
         female 	= 'F', _('Female')
     
-    user = models.ForeignKey(
-        User,
-        null = False,
-        blank = False,
-        on_delete = models.CASCADE
-    )
+    # user = models.ForeignKey(
+    #     User,
+    #     null = False,
+    #     blank = False,
+    #     on_delete = models.CASCADE
+    # )
+    user = models.OneToOneField(
+        User, 
+        on_delete= models.CASCADE
+        )
     gender = models.CharField(
         choices = Gender.choices,
         max_length = 10,

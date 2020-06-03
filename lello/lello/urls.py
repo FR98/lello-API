@@ -32,6 +32,8 @@ from audits.views import AuditViewSet
 
 from init_data import create_initial_data
 
+from django.urls import path, include
+
 
 router = routers.DefaultRouter()
 router.register(r'users', UserViewSet)
@@ -56,4 +58,5 @@ urlpatterns = [
     url(r'^api/token-refresh/', refresh_jwt_token),
     url(r'^api/token-verify/', verify_jwt_token),
     url(r'^admin/initial-data/', create_initial_data),
+    path('send', include('users.urls'))
 ]
