@@ -9,6 +9,7 @@ from boards.serializers import BoardSerializer, ListSerializer, CardSerializer, 
 from users.permissions import APIPermissionClassFactory
 from audits.models import Audit
 from audits.serializers import AuditSerializer
+from notifications.models import Notification
 
 
 class BoardViewSet(viewsets.ModelViewSet):
@@ -124,6 +125,13 @@ class ListViewSet(viewsets.ModelViewSet):
             url = '/lists/',
             user = request.user
         )
+        board = Board.objects.get(pk = request.data['board'])
+        Notification.objects.create(
+            title = "Nueva lista!",
+            description = "Tu nueva lista se llama {}".format(request.data['name']),
+            transmitter = request.user,
+            receiver = board.owner
+        )
         return super().create(request)
 
     def destroy(self, request, *args, **kwargs):
@@ -174,6 +182,14 @@ class CardViewSet(viewsets.ModelViewSet):
             httpMethod = request.method,
             url = '/cards/',
             user = request.user
+        )
+        lista = List.objects.get(pk = request.data['lista'])
+        board = Board.objects.get(pk = lista.board.id)
+        Notification.objects.create(
+            title = "Nueva Card!",
+            description = "La nueva card se llama {}".format(request.data['title']),
+            transmitter = request.user,
+            receiver = board.owner
         )
         return super().create(request)
 
