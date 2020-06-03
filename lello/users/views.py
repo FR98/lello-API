@@ -3,6 +3,7 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.http import Http404
+from django.core.mail import send_mail
 
 from django.contrib.auth.models import User
 from users.models import UserDetail, Team
@@ -11,6 +12,17 @@ from users.permissions import APIPermissionClassFactory
 from boards.serializers import BoardSerializer
 from audits.models import Audit
 
+def index(request):
+    print("as")
+    send_mail(
+        'Prueba sujeto',
+        'Este es un mensaje',
+        'lelloinc@hotmail.com',
+        ['gian.luca.99@hotmail.com'],
+        fail_silently=False
+    )
+    print("de")
+    return render(request, 'send/index.html')
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -105,3 +117,4 @@ class TeamViewSet(viewsets.ModelViewSet):
         return Response(
             [BoardSerializer(board).data for board in boards]
         )
+
