@@ -24,17 +24,17 @@ class BoardViewSet(viewsets.ModelViewSet):
             name='BoardPermission',
             permission_configuration={
                 'base': {
-                    'create': True,
-                    'list': True,
+                    'create': lambda user, req: user.is_authenticated,
+                    'list': False,
                 },
                 'instance': {
-                    'retrieve': True,
-                    'update': True,
-                    'partial_update': True,
-                    'destroy': True,
-                    'lists': True,
-                    'audits': True,
-                    'calendar_events': True,
+                    'retrieve': lambda user, obj, req: user.is_authenticated,
+                    'update': lambda user, obj, req: user.is_authenticated,
+                    'partial_update': lambda user, obj, req: user.is_authenticated,
+                    'destroy': lambda user, obj, req: user.is_authenticated,
+                    'lists': lambda user, obj, req: user.is_authenticated,
+                    'audits': lambda user, obj, req: user.is_authenticated,
+                    'calendar_events': lambda user, obj, req: user.is_authenticated,
                 }
             }
         ),
@@ -98,6 +98,9 @@ class BoardViewSet(viewsets.ModelViewSet):
                     url = '/cards/{}/'.format(card.id)
                 ))
 
+        audits = audits.union(board.audit_set.all())
+        print(audits)
+
         return Response(
             [AuditSerializer(audit).data for audit in audits]
         )
@@ -120,27 +123,28 @@ class ListViewSet(viewsets.ModelViewSet):
             name='ListPermission',
             permission_configuration={
                 'base': {
-                    'create': True,
-                    'list': True,
+                    'create': lambda user, req: user.is_authenticated,
+                    'list': False,
                 },
                 'instance': {
-                    'retrieve': True,
-                    'update': True,
-                    'partial_update': True,
-                    'destroy': True,
-                    'cards': True,
+                    'retrieve': lambda user, obj, req: user.is_authenticated,
+                    'update': lambda user, obj, req: user.is_authenticated,
+                    'partial_update': lambda user, obj, req: user.is_authenticated,
+                    'destroy': lambda user, obj, req: user.is_authenticated,
+                    'cards': lambda user, obj, req: user.is_authenticated,
                 }
             }
         ),
     )
 
     def create(self, request):
+        board = Board.objects.get(pk = request.data['board'])
         Audit.objects.create(
             httpMethod = request.method,
             url = '/lists/',
-            user = request.user
+            user = request.user,
+            board = board
         )
-        board = Board.objects.get(pk = request.data['board'])
         Notification.objects.create(
             title = "Nueva lista!",
             description = "Tu nueva lista se llama {}".format(request.data['name']),
@@ -152,11 +156,13 @@ class ListViewSet(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         try:
             instance = self.get_object()
+            board = instance.board
             self.perform_destroy(instance)
             Audit.objects.create(
                 httpMethod = request.method,
                 url = '/lists/{}/'.format(kwargs['pk']),
-                user = request.user
+                user = request.user,
+                board = board
             )
         except Http404:
             pass
@@ -179,14 +185,14 @@ class CardViewSet(viewsets.ModelViewSet):
             name='CardPermission',
             permission_configuration={
                 'base': {
-                    'create': True,
-                    'list': True,
+                    'create': lambda user, req: user.is_authenticated,
+                    'list': False,
                 },
                 'instance': {
-                    'retrieve': True,
-                    'update': True,
-                    'partial_update': True,
-                    'destroy': True,
+                    'retrieve': lambda user, obj, req: user.is_authenticated,
+                    'update': lambda user, obj, req: user.is_authenticated,
+                    'partial_update': lambda user, obj, req: user.is_authenticated,
+                    'destroy': lambda user, obj, req: user.is_authenticated,
                 }
             }
         ),
@@ -201,7 +207,8 @@ class CardViewSet(viewsets.ModelViewSet):
         Audit.objects.create(
             httpMethod = request.method,
             url = '/cards/',
-            user = request.user
+            user = request.user,
+            board = tablero
         )
         lista = List.objects.get(pk = request.data['lista'])
         board = Board.objects.get(pk = lista.board.id)
@@ -240,14 +247,14 @@ class LabelViewSet(viewsets.ModelViewSet):
             name='LabelPermission',
             permission_configuration={
                 'base': {
-                    'create': True,
-                    'list': True,
+                    'create': lambda user, req: user.is_authenticated,
+                    'list': False,
                 },
                 'instance': {
-                    'retrieve': True,
-                    'update': True,
-                    'partial_update': True,
-                    'destroy': True,
+                    'retrieve': lambda user, obj, req: user.is_authenticated,
+                    'update': lambda user, obj, req: user.is_authenticated,
+                    'partial_update': lambda user, obj, req: user.is_authenticated,
+                    'destroy': lambda user, obj, req: user.is_authenticated,
                 }
             }
         ),

@@ -18,15 +18,15 @@ class CalendarViewSet(viewsets.ModelViewSet):
             name='CalendarPermission',
             permission_configuration={
                 'base': {
-                    'create': True,
-                    'list': True,
+                    'create': False,
+                    'list': False,
                 },
                 'instance': {
-                    'retrieve': True,
-                    'update': True,
-                    'partial_update': True,
-                    'destroy': True,
-                    'events': True,
+                    'retrieve': lambda user, obj, req: user.is_authenticated,
+                    'update': False,
+                    'partial_update': False,
+                    'destroy': False,
+                    'events': lambda user, obj, req: user.is_authenticated,
                 }
             }
         ),
@@ -70,14 +70,14 @@ class EventViewSet(viewsets.ModelViewSet):
             name='EventPermission',
             permission_configuration={
                 'base': {
-                    'create': True,
-                    'list': True,
+                    'create': lambda user, req: user.is_authenticated,
+                    'list': lambda user, req: user.is_authenticated,
                 },
                 'instance': {
-                    'retrieve': True,
-                    'update': True,
-                    'partial_update': True,
-                    'destroy': True,
+                    'retrieve': lambda user, obj, req: user.is_authenticated,
+                    'update': False,
+                    'partial_update': False,
+                    'destroy': False,
                 }
             }
         ),

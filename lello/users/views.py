@@ -35,14 +35,14 @@ class UserViewSet(viewsets.ModelViewSet):
             permission_configuration={
                 'base': {
                     'create': True,
-                    'list': True,
+                    'list': lambda user, req: user.is_authenticated,
                 },
                 'instance': {
-                    'retrieve': True,
-                    'update': True,
-                    'partial_update': True,
-                    'destroy': True,
-                    'notifications': True,
+                    'retrieve': lambda user, obj, req: user.is_authenticated,
+                    'update': lambda user, obj, req: user.is_authenticated,
+                    'partial_update': lambda user, obj, req: user.is_authenticated,
+                    'destroy': lambda user, obj, req: user.is_authenticated,
+                    'notifications': lambda user, obj, req: user.is_authenticated,
                 }
             }
         ),
@@ -66,13 +66,13 @@ class UserDetailViewSet(viewsets.ModelViewSet):
             permission_configuration={
                 'base': {
                     'create': True,
-                    'list': True,
+                    'list': False,
                 },
                 'instance': {
-                    'retrieve': True,
-                    'update': True,
-                    'partial_update': True,
-                    'destroy': True,
+                    'retrieve': lambda user, obj, req: user.is_authenticated,
+                    'update': lambda user, obj, req: user.is_authenticated,
+                    'partial_update': lambda user, obj, req: user.is_authenticated,
+                    'destroy': lambda user, obj, req: user.is_authenticated,
                 }
             }
         ),
@@ -86,16 +86,16 @@ class TeamViewSet(viewsets.ModelViewSet):
             name='TeamPermission',
             permission_configuration={
                 'base': {
-                    'create': True, # lambda user, req: user.is_authenticated,
-                    'list': True,
+                    'create': lambda user, req: user.is_authenticated,
+                    'list': lambda user, req: user.is_authenticated,
                 },
                 'instance': {
-                    'retrieve': True,
-                    'update': True,
-                    'partial_update': True,
-                    'destroy': True,
-                    'boards': True,
-                    'members': True,
+                    'retrieve': lambda user, obj, req: user.is_authenticated,
+                    'update': lambda user, obj, req: user.is_authenticated,
+                    'partial_update': lambda user, obj, req: user.is_authenticated,
+                    'destroy': lambda user, obj, req: user.is_authenticated,
+                    'boards': lambda user, obj, req: user.is_authenticated,
+                    'members': lambda user, obj, req: user.is_authenticated,
                 }
             }
         ),
