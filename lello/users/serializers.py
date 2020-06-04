@@ -12,6 +12,7 @@ class UserDetailSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
     class Meta:
         model = User
         # fields = '__all__'
@@ -20,8 +21,21 @@ class UserSerializer(serializers.ModelSerializer):
             'email',
             'first_name',
             'last_name',
-            'username'
+            'username',
+            'password'
         )
+    
+    # detail = UserDetailSerializer(many=False, read_only=False)
+    def create(self, validated_data):
+        print("PUTAAAA")
+        user = User.objects.create_user(**validated_data)
+        # user = User.objects.create(
+        #     user = validated_data["username"], 
+        #     active = True 
+        # )
+        # user.set_password(validated_data["password"])
+        # user.save()
+        return user
 
     
 

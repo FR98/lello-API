@@ -5,9 +5,9 @@ from django.utils.translation import gettext_lazy as _
 
 class UserDetail(models.Model):
 
-    class Gender(models.TextChoices):
-        male 	= 'M', _('Male')
-        female 	= 'F', _('Female')
+    # class Gender(models.TextChoices):
+    #     male 	= "M", _("Male")
+    #     female 	= "F", _("Female")
     
     # user = models.ForeignKey(
     #     User,
@@ -15,14 +15,15 @@ class UserDetail(models.Model):
     #     blank = False,
     #     on_delete = models.CASCADE
     # )
-    user = models.OneToOneField(
+    user = models.ForeignKey(
         User, 
+        # related_name="detail",
         on_delete= models.CASCADE
-        )
+    )
     gender = models.CharField(
-        choices = Gender.choices,
+        # choices = Gender.choices,
         max_length = 10,
-        editable = False,
+        # editable = False,
         null = False,
     )
     phone = models.CharField(
