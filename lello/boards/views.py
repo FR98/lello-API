@@ -5,6 +5,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.http import Http404
 from django.core.mail import send_mail
+from guardian.shortcuts import assign_perm
 
 from boards.models import Board, List, Card, Label
 from boards.serializers import BoardSerializer, ListSerializer, CardSerializer, LabelSerializer
@@ -31,7 +32,7 @@ class BoardViewSet(viewsets.ModelViewSet):
                     'retrieve': lambda user, obj, req: user.is_authenticated,
                     'update': lambda user, obj, req: user.is_authenticated,
                     'partial_update': lambda user, obj, req: user.is_authenticated,
-                    'destroy': lambda user, obj, req: user.is_authenticated,
+                    'destroy': 'boards.delete_board',
                     'lists': lambda user, obj, req: user.is_authenticated,
                     'audits': lambda user, obj, req: user.is_authenticated,
                     'calendar_events': lambda user, obj, req: user.is_authenticated,
@@ -40,22 +41,16 @@ class BoardViewSet(viewsets.ModelViewSet):
         ),
     )
 
-    def create(self, request):
-        # print(request.data)
+    def perform_create(self, serializer):
+        user = self.request.user
+        board = serializer.save()
+        assign_perm('boards.delete_board', user, board)
         Audit.objects.create(
-            httpMethod = request.method,
+            httpMethod = self.request.method,
             url = '/boards/',
-            user = request.user
+            user = user
         )
-        return super().create(request)
-
-    # def perform_create(self, serializer):
-    #     user = self.request.user
-    #     team = serializer.validated_data['team']
-    #     print(serializer)
-    #     board = serializer.save()
-
-    #     return Response(serializer.data)
+        return Response(serializer.data)
 
     def destroy(self, request, *args, **kwargs):
         try:

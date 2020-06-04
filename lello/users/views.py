@@ -4,6 +4,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.http import Http404
 from django.core.mail import send_mail
+from guardian.shortcuts import assign_perm
 
 from users.serializers import UserSerializer, UserDetailSerializer, TeamSerializer
 from notifications.serializers import NotificationSerializer
@@ -93,7 +94,7 @@ class TeamViewSet(viewsets.ModelViewSet):
                     'retrieve': lambda user, obj, req: user.is_authenticated,
                     'update': lambda user, obj, req: user.is_authenticated,
                     'partial_update': lambda user, obj, req: user.is_authenticated,
-                    'destroy': lambda user, obj, req: user.is_authenticated,
+                    'destroy': 'users.delete_team',
                     'boards': lambda user, obj, req: user.is_authenticated,
                     'members': lambda user, obj, req: user.is_authenticated,
                 }
@@ -101,13 +102,16 @@ class TeamViewSet(viewsets.ModelViewSet):
         ),
     )
 
-    def create(self, request):
+    def perform_create(self, serializer):
+        user = self.request.user
+        team = serializer.save()
+        assign_perm('users.delete_team', user, team)
         Audit.objects.create(
-            httpMethod = request.method,
+            httpMethod = self.request.method,
             url = '/teams/',
-            user = request.user
+            user = user
         )
-        return super().create(request)
+        return Response(serializer.data)
 
     def destroy(self, request, *args, **kwargs):
         try:
