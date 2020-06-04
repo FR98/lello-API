@@ -10,6 +10,8 @@ from boards.models import Board, List, Card, Label
 from boards.serializers import BoardSerializer, ListSerializer, CardSerializer, LabelSerializer
 from users.permissions import APIPermissionClassFactory
 from audits.models import Audit
+from audits.serializers import AuditSerializer
+from notifications.models import Notification
 from calendars.models import Event
 
 
@@ -30,6 +32,7 @@ class BoardViewSet(viewsets.ModelViewSet):
                     'partial_update': True,
                     'destroy': True,
                     'lists': True,
+                    'audits': True,
                 }
             }
         ),
@@ -58,7 +61,7 @@ class BoardViewSet(viewsets.ModelViewSet):
             self.perform_destroy(instance)
             Audit.objects.create(
                 httpMethod = request.method,
-                url = '/boards/{}'.format(kwargs['pk']),
+                url = '/boards/{}/'.format(kwargs['pk']),
                 user = request.user
             )
         except Http404:
@@ -72,6 +75,29 @@ class BoardViewSet(viewsets.ModelViewSet):
 
         return Response(
             [ListSerializer(lista).data for lista in lists]
+        )
+
+    @action(detail=True, methods=['get'])
+    def audits(self, request, pk=None):
+        board = self.get_object()
+        lists = board.list_set.all()
+
+        audits = Audit.objects.filter(
+            url = '/boards/{}/'.format(board.id)
+        )
+
+        for lista in lists:
+            audits = audits.union(Audit.objects.filter(
+                url = '/lists/{}/'.format(lista.id)
+            ))
+
+            for card in lista.card_set.all():
+                audits = audits.union(Audit.objects.filter(
+                    url = '/cards/{}/'.format(card.id)
+                ))
+
+        return Response(
+            [AuditSerializer(audit).data for audit in audits]
         )
 
 class ListViewSet(viewsets.ModelViewSet):
@@ -102,6 +128,13 @@ class ListViewSet(viewsets.ModelViewSet):
             url = '/lists/',
             user = request.user
         )
+        board = Board.objects.get(pk = request.data['board'])
+        Notification.objects.create(
+            title = "Nueva lista!",
+            description = "Tu nueva lista se llama {}".format(request.data['name']),
+            transmitter = request.user,
+            receiver = board.owner
+        )
         return super().create(request)
 
     def destroy(self, request, *args, **kwargs):
@@ -110,7 +143,7 @@ class ListViewSet(viewsets.ModelViewSet):
             self.perform_destroy(instance)
             Audit.objects.create(
                 httpMethod = request.method,
-                url = '/lists/{}'.format(kwargs['pk']),
+                url = '/lists/{}/'.format(kwargs['pk']),
                 user = request.user
             )
         except Http404:
@@ -159,6 +192,14 @@ class CardViewSet(viewsets.ModelViewSet):
             url = '/cards/',
             user = request.user
         )
+        lista = List.objects.get(pk = request.data['lista'])
+        board = Board.objects.get(pk = lista.board.id)
+        Notification.objects.create(
+            title = "Nueva Card!",
+            description = "La nueva card se llama {}".format(request.data['title']),
+            transmitter = request.user,
+            receiver = board.owner
+        )
         Event.objects.create(
             calendar = calendario,
             title = 'Nueva tarjeta: {}'.format(request.data["title"]),
@@ -174,7 +215,7 @@ class CardViewSet(viewsets.ModelViewSet):
             self.perform_destroy(instance)
             Audit.objects.create(
                 httpMethod = request.method,
-                url = '/cards/{}'.format(kwargs['pk']),
+                url = '/cards/{}/'.format(kwargs['pk']),
                 user = request.user
             )
         except Http404:
@@ -216,7 +257,7 @@ class LabelViewSet(viewsets.ModelViewSet):
             self.perform_destroy(instance)
             Audit.objects.create(
                 httpMethod = request.method,
-                url = '/labels/{}'.format(kwargs['pk']),
+                url = '/labels/{}/'.format(kwargs['pk']),
                 user = request.user
             )
         except Http404:

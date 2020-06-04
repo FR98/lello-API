@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from rest_framework import viewsets, status
 from django.http import Http404
+from rest_framework.response import Response
 
 from notifications.models import Notification
 from notifications.serializers import NotificationSerializer
@@ -43,7 +44,7 @@ class NotificationViewSet(viewsets.ModelViewSet):
             self.perform_destroy(instance)
             Audit.objects.create(
                 httpMethod = request.method,
-                url = '/notifications/{}'.format(kwargs['pk']),
+                url = '/notifications/{}/'.format(kwargs['pk']),
                 user = request.user
             )
         except Http404:

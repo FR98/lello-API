@@ -46,7 +46,7 @@ class ChecklistViewSet(viewsets.ModelViewSet):
             self.perform_destroy(instance)
             Audit.objects.create(
                 httpMethod = request.method,
-                url = '/checklists/{}'.format(kwargs['pk']),
+                url = '/checklists/{}/'.format(kwargs['pk']),
                 user = request.user
             )
         except Http404:
@@ -97,7 +97,7 @@ class ElementViewSet(viewsets.ModelViewSet):
             self.perform_destroy(instance)
             Audit.objects.create(
                 httpMethod = request.method,
-                url = '/elements/{}'.format(kwargs['pk']),
+                url = '/elements/{}/'.format(kwargs['pk']),
                 user = request.user
             )
         except Http404:

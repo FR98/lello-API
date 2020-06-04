@@ -46,7 +46,7 @@ class CalendarViewSet(viewsets.ModelViewSet):
             self.perform_destroy(instance)
             Audit.objects.create(
                 httpMethod = request.method,
-                url = '/calendars/{}'.format(kwargs['pk']),
+                url = '/calendars/{}/'.format(kwargs['pk']),
                 user = request.user
             )
         except Http404:
@@ -97,7 +97,7 @@ class EventViewSet(viewsets.ModelViewSet):
             self.perform_destroy(instance)
             Audit.objects.create(
                 httpMethod = request.method,
-                url = '/events/{}'.format(kwargs['pk']),
+                url = '/events/{}/'.format(kwargs['pk']),
                 user = request.user
             )
         except Http404:
