@@ -14,14 +14,14 @@ class AuditViewSet(viewsets.ModelViewSet):
             name='AuditPermission',
             permission_configuration={
                 'base': {
-                    'create': True,
+                    'create': False,
                     'list': True,
                 },
                 'instance': {
                     'retrieve': True,
-                    'update': True,
-                    'partial_update': True,
-                    'destroy': True,
+                    'update': False,
+                    'partial_update': False,
+                    'destroy': False,
                 }
             }
         ),
