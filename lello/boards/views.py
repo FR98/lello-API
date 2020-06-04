@@ -13,6 +13,7 @@ from audits.models import Audit
 from audits.serializers import AuditSerializer
 from notifications.models import Notification
 from calendars.models import Event
+from calendars.serializers import EventSerializer
 
 
 class BoardViewSet(viewsets.ModelViewSet):
@@ -33,6 +34,7 @@ class BoardViewSet(viewsets.ModelViewSet):
                     'destroy': True,
                     'lists': True,
                     'audits': True,
+                    'calendar_events': True,
                 }
             }
         ),
@@ -98,6 +100,16 @@ class BoardViewSet(viewsets.ModelViewSet):
 
         return Response(
             [AuditSerializer(audit).data for audit in audits]
+        )
+
+    @action(detail=True, url_path='calendar-events', methods=['get'])
+    def calendar_events(self, request, pk=None):
+        board = self.get_object()
+        calendar = board.calendar
+        events = calendar.event_set.all()
+        
+        return Response(
+            [EventSerializer(event).data for event in events]
         )
 
 class ListViewSet(viewsets.ModelViewSet):
@@ -185,8 +197,7 @@ class CardViewSet(viewsets.ModelViewSet):
         # tablero = Board.objects.select_related('board').get(lista.id)
         tablero = lista.board
         # tablero = lista.board_set.all()[0]
-        calendario = tablero.calendar_set.all()[0]
-        print(calendario)
+        calendario = tablero.calendar
         Audit.objects.create(
             httpMethod = request.method,
             url = '/cards/',
@@ -206,7 +217,6 @@ class CardViewSet(viewsets.ModelViewSet):
             description = 'Tarjeta creada por: {}, {}, {}, {}'.format(request.user.username, lista.id, tablero.id, calendario.id),
             date = datetime.datetime.now()
         )
-        
         return super().create(request)
 
     def destroy(self, request, *args, **kwargs):

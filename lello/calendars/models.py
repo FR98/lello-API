@@ -1,12 +1,12 @@
 from django.db import models
 
+from boards.models import Board
+
 
 class Calendar(models.Model):
-    board = models.ForeignKey(
-        'boards.Board',
-        null = False,
-        blank = False,
-        on_delete = models.CASCADE 
+    board = models.OneToOneField(
+        Board,
+        on_delete = models.CASCADE,
     )
     
 class Event(models.Model):

@@ -3,24 +3,25 @@ from rest_framework import serializers
 from boards.models import Board, List, Card, Label
 from users.serializers import TeamSerializer, UserSerializer
 from checklists.serializers import ChecklistSerializer
+from calendars.models import Calendar
 
 
 class BoardSerializer(serializers.ModelSerializer):
     # team = TeamSerializer()
     # owner = UserSerializer(read_only = True)
+    # calendar = CalendarSerializer()
 
     class Meta:
         model = Board
         fields = '__all__'
 
-    # def create(self, validated_data):
-    #     print(validated_data)
-    #     owner_data = validated_data.pop('owner')
-    #     print('------------------')
-    #     print(owner_data)
-    #     print('------------------')
-    #     board = Board.objects.create(**validated_data)
-    #     return board
+    def create(self, validated_data):
+        # calendar_date = validated_data.pop('calendar')
+        board = Board.objects.create(**validated_data)
+        Calendar.objects.create(
+            board = board
+        )
+        return board
 
 class LabelSerializer(serializers.ModelSerializer):
     class Meta:

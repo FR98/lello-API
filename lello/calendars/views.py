@@ -57,7 +57,7 @@ class CalendarViewSet(viewsets.ModelViewSet):
     def events(self, request, pk=None):
         calendar = self.get_object()
         events = calendar.event_set.all()
-
+        
         return Response(
             [EventSerializer(event).data for event in events]
         )
