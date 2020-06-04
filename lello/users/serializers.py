@@ -24,20 +24,19 @@ class UserSerializer(serializers.ModelSerializer):
             'username',
             'password'
         )
-    
+
     # detail = UserDetailSerializer(many=False, read_only=False)
     def create(self, validated_data):
-        print("PUTAAAA")
         user = User.objects.create_user(**validated_data)
         # user = User.objects.create(
-        #     user = validated_data["username"], 
-        #     active = True 
+        #     user = validated_data["username"],
+        #     active = True
         # )
         # user.set_password(validated_data["password"])
         # user.save()
         return user
 
-    
+
 
 
 class TeamSerializer(serializers.ModelSerializer):
