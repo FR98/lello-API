@@ -3,7 +3,7 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.http import Http404
-from django.core.mail import send_mail
+from django.core.mail import EmailMessage
 from guardian.shortcuts import assign_perm
 
 from users.serializers import UserSerializer, UserDetailSerializer, TeamSerializer
@@ -16,16 +16,25 @@ from users.models import UserDetail, Team
 from audits.models import Audit
 
 def index(request):
-    print("as")
-    send_mail(
-        'Prueba sujeto',
-        'Este es un mensaje',
-        'lelloinc@hotmail.com',
-        ['gian.luca.99@hotmail.com'],
-        fail_silently=False
-    )
-    print("de")
+    # email = EmailMessage(
+    #     'Hello from Lello',
+    #     'Message',
+    #     'lellodjango@gmail.com',
+    #     ['frangrosalo@hotmail.com'],
+    # )
+    # email.send(fail_silently=False)
+    send_email('Hola', ['frangrosalo@hotmail.com'])
     return render(request, 'send/index.html')
+
+def send_email(message, to):
+    EmailMessage(
+        'Hello from Lello',
+        message,
+        'lellodjango@gmail.com',
+        to,
+        index.html,
+    ).send(fail_silently=False)
+
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()

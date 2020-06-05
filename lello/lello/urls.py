@@ -58,5 +58,5 @@ urlpatterns = [
     url(r'^api/token-refresh/', refresh_jwt_token),
     url(r'^api/token-verify/', verify_jwt_token),
     url(r'^admin/initial-data/', create_initial_data),
-    path('send', include('users.urls'))
+    url(r'send/', include('users.urls')),
 ]
