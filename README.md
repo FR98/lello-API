@@ -65,3 +65,7 @@
         Username: admin
         Password: admin
 * Listo!
+
+<h3 align="center">IMPORTANTE</h3>
+ Para comprobar el funcionamiento de enviar emails, registrarse con un correo real y revisar la bandeja de entrada.
+ 
