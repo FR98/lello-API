@@ -97,11 +97,6 @@ class Card(models.Model):
         max_digits = 4,
         default = 0,
     )
-    checklist = models.ForeignKey(
-        'checklists.Checklist',
-        null = True,
-        on_delete = models.SET_NULL
-    )
     deadline = models.DateTimeField(
         null = True,
     )
@@ -119,7 +114,7 @@ class Card(models.Model):
     )
 
     def __str__(self):
-        return self.number + " " + self.title
+        return self.title
     
 class Label(models.Model):
 

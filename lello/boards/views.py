@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from django.http import Http404
 from django.core.mail import send_mail
 from guardian.shortcuts import assign_perm
+from django.core.exceptions import ObjectDoesNotExist
 
 from boards.models import Board, List, Card, Label
 from boards.serializers import BoardSerializer, ListSerializer, CardSerializer, LabelSerializer
@@ -15,6 +16,7 @@ from audits.serializers import AuditSerializer
 from notifications.models import Notification
 from calendars.models import Event
 from calendars.serializers import EventSerializer
+from checklists.serializers import ElementSerializer
 
 
 class BoardViewSet(viewsets.ModelViewSet):
@@ -188,6 +190,7 @@ class CardViewSet(viewsets.ModelViewSet):
                     'update': lambda user, obj, req: user.is_authenticated,
                     'partial_update': lambda user, obj, req: user.is_authenticated,
                     'destroy': lambda user, obj, req: user.is_authenticated,
+                    'checklist': lambda user, obj, req: user.is_authenticated,
                 }
             }
         ),
@@ -233,6 +236,21 @@ class CardViewSet(viewsets.ModelViewSet):
         except Http404:
             pass
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @action(detail=True, methods=['get'])
+    def checklist(self, request, pk=None):
+        card = self.get_object()
+        try:        
+            checklist = card.checklist
+            elements = checklist.element_set.all()
+            return Response({
+                'id': checklist.id,
+                'name': checklist.name,
+                'elements': [ElementSerializer(element).data for element in elements]
+            })
+        except ObjectDoesNotExist:
+            return Response([])
+
 
 class LabelViewSet(viewsets.ModelViewSet):
     queryset = Label.objects.all()

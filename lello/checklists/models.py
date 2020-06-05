@@ -1,12 +1,20 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+from boards.models import Card
+
 
 
 class Checklist(models.Model):
     name = models.CharField(
         max_length = 50,
         default = "To do"
+    )
+    card = models.OneToOneField(
+        Card,
+        null = True,
+        on_delete = models.CASCADE,
+        related_name = 'checklist'
     )
     created_at = models.DateTimeField(
         auto_now_add = True
