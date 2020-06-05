@@ -1,5 +1,7 @@
-<h2 align="center">Lello</h2>
-<h3 align="center">Proyecto UVG WEB</h3>
+<h1 align="center">Lello</h1>
+<h2 align="center">Proyecto UVG WEB</h2>
+<h3 align="center">Gian Luca Rivera - 18049</h3>
+<h3 align="center">Francisco Rosal - 18676</h3>
 
 ## Configuración de entorno
 
