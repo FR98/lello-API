@@ -9,12 +9,19 @@
 * [Instalar Postgres](https://www.postgresql.org/)
 * Instalar Python Enviorment
     ```shell
+    Linux:
     $ sudo apt install python3-env
+    MacOS:
+    $ sudo pip3 install virtualenv
     ```
 * Clonar repo
 * Crear y activar python env
     ```shell
+    Linux:
     $ python3 -m venv venv
+    $ source venv/bin/activate
+    MacOS:
+    $ virtualenv venv
     $ source venv/bin/activate
     ```
 * Instalar dependencias
@@ -23,9 +30,14 @@
     $ pip install -r requirements.txt
     ```
 * [psycopg2](https://www.psycopg.org/)
-    * Comprobar instalación
+    * Instalar y comprobar instalación
     ```shell
+    Linux:
+    $ pip install psycopg2
     $ python -c "import psycopg2" --verbose
+    MacOS:
+    $ pip3 install psycopg2-binary
+    $ python3 -c "import psycopg2" --verbose
     ```
 
 ## Configuración de Base de Datos
@@ -44,6 +56,7 @@
 
 * Crear/resetear la db y aplicar migrations
     ```shell
+    $ cd lello
     $ python load_data.py
     ```
 
